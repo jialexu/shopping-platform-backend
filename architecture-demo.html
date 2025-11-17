@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Diagrams - Shopping Service Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background: #2d2d44;
+            border: 2px solid #3d3d5c;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            color: #fff;
+        }
+        
+        .tab:hover {
+            background: #3d3d5c;
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .diagram-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .diagram-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .diagram-card {
+            background: #2d2d44;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 2px solid #3d3d5c;
+        }
+        
+        .diagram-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .diagram-title .icon {
+            font-size: 1.5em;
+        }
+        
+        .diagram-description {
+            color: #b8b8d1;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .architecture-diagram {
+            background: #1a1a2e;
+            border: 2px solid #3d3d5c;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .service-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 10px;
+            display: inline-block;
+            min-width: 150px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s;
+        }
+        
+        .service-box:hover {
+            transform: scale(1.05);
+        }
+        
+        .service-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .service-port {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .db-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 10px;
+            display: inline-block;
+            min-width: 130px;
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.3);
+        }
+        
+        .gateway-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px auto;
+            display: inline-block;
+            min-width: 200px;
+            box-shadow: 0 8px 30px rgba(79, 172, 254, 0.4);
+        }
+        
+        .kafka-box {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 10px;
+            display: inline-block;
+            min-width: 150px;
+            box-shadow: 0 5px 20px rgba(250, 112, 154, 0.3);
+        }
+        
+        .arrow {
+            color: #667eea;
+            font-size: 2em;
+            margin: 0 10px;
+        }
+        
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .vertical-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .tech-stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .tech-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        .tech-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .tech-card p {
+            font-size: 0.95em;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .highlight {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .code-block {
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #30363d;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+        }
+        
+        .layer-section {
+            margin: 30px 0;
+        }
+        
+        .layer-title {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3d3d5c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ Architecture & Tech Stack Diagrams</h1>
+            <p class="subtitle">Chuwa Shopping Service - Microservices Architecture Visualization</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showDiagram('overview')">🎯 System Overview</button>
+            <button class="tab" onclick="showDiagram('databases')">💾 Database Architecture</button>
+            <button class="tab" onclick="showDiagram('spring')">🍃 Spring Ecosystem</button>
+            <button class="tab" onclick="showDiagram('kafka')">📨 Event-Driven Flow</button>
+            <button class="tab" onclick="showDiagram('security')">🔐 Security Architecture</button>
+            <button class="tab" onclick="showDiagram('deployment')">🐳 Deployment View</button>
+        </div>
+
+        <!-- Overview Diagram -->
+        <div id="overview" class="diagram-section active">
+            <div class="diagram-card">
+                <h2 class="diagram-title">
+                    <span class="icon">🎯</span>
+                    Complete System Architecture
+                </h2>
+                <p class="diagram-description">
+                    A comprehensive view of all 7 microservices, 4 database types, API Gateway, and Kafka event bus.
+                    This architecture demonstrates modern cloud-native patterns with service independence and scalability.
+                </p>
+
+                <div class="architecture-diagram">
+                    <div class="vertical-flow">
+                        <!-- Gateway Layer -->
+                        <div class="gateway-box">
+                            <div class="service-name">🌐 API Gateway</div>
+                            <div class="service-port">Port 8080</div>
+                            <div style="font-size: 0.85em; margin-top: 5px;">Spring Cloud Gateway + JWT</div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <!-- Services Layer -->
+                        <div class="flow-container">
+                            <div class="service-box">
+                                <div class="service-name">🔐 Auth</div>
+                                <div class="service-port">:9000</div>
+                            </div>
+                            
+                            <div class="service-box">
+                                <div class="service-name">👤 Account</div>
+                                <div class="service-port">:9001</div>
+                            </div>
+                            
+                            <div class="service-box">
+                                <div class="service-name">📦 Item</div>
+                                <div class="service-port">:9002</div>
+                            </div>
+                            
+                            <div class="service-box">
+                                <div class="service-name">📊 Inventory</div>
+                                <div class="service-port">:9003</div>
+                            </div>
+                            
+                            <div class="service-box">
+                                <div class="service-name">🛍️ Order</div>
+                                <div class="service-port">:9004</div>
+                            </div>
+                            
+                            <div class="service-box">
+                                <div class="service-name">💳 Payment</div>
+                                <div class="service-port">:9005</div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <!-- Database Layer -->
+                        <div class="flow-container">
+                            <div class="db-box">
+                                <div class="service-name">🐬 MySQL</div>
+                                <div style="font-size: 0.85em; margin-top: 5px;">Account + Payment</div>
+                            </div>
+                            
+                            <div class="db-box">
+                                <div class="service-name">🐘 PostgreSQL</div>
+                                <div style="font-size: 0.85em; margin-top: 5px;">Auth Tokens</div>
+                            </div>
+                            
+                            <div class="db-box">
+                                <div class="service-name">🍃 MongoDB</div>
+                                <div style="font-size: 0.85em; margin-top: 5px;">Items Catalog</div>
+                            </div>
+                            
+                            <div class="db-box">
+                                <div class="service-name">💎 Cassandra</div>
+                                <div style="font-size: 0.85em; margin-top: 5px;">Orders + Inventory</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px;">
+                            <div class="kafka-box">
+                                <div class="service-name">📨 Apache Kafka</div>
+                                <div style="font-size: 0.85em; margin-top: 5px;">Event Bus - Async Communication</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                        <span>API Gateway</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        <span>Microservices</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                        <span>Databases</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+                        <span>Message Queue</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Architecture -->
+        <div id="databases" class="diagram-section">
+            <div class="diagram-card">
+                <h2 class="diagram-title">
+                    <span class="icon">💾</span>
+                    Multi-Database Architecture
+                </h2>
+                <p class="diagram-description">
+                    Demonstrates polyglot persistence - using the right database for the right job. Each service uses 
+                    the database technology that best fits its data model and access patterns.
+                </p>
+
+                <div class="tech-stack-grid">
+                    <div class="tech-card">
+                        <h3>🐬 MySQL</h3>
+                        <p><strong>Type:</strong> Relational (ACID)</p>
+                        <p><strong>Used By:</strong> Account Service, Payment Service</p>
+                        <p><strong>Why:</strong> Strong consistency for financial transactions and user data</p>
+                        <p><strong>Port:</strong> 3306</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>🐘 PostgreSQL</h3>
+                        <p><strong>Type:</strong> Relational (Advanced)</p>
+                        <p><strong>Used By:</strong> Auth Service</p>
+                        <p><strong>Why:</strong> Advanced querying for token management and blacklisting</p>
+                        <p><strong>Port:</strong> 5432</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>🍃 MongoDB</h3>
+                        <p><strong>Type:</strong> Document Store (NoSQL)</p>
+                        <p><strong>Used By:</strong> Item Service</p>
+                        <p><strong>Why:</strong> Flexible schema for product attributes and metadata</p>
+                        <p><strong>Port:</strong> 27017</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>💎 Cassandra</h3>
+                        <p><strong>Type:</strong> Wide-Column Store (NoSQL)</p>
+                        <p><strong>Used By:</strong> Order Service, Inventory Service</p>
+                        <p><strong>Why:</strong> High write throughput for orders and inventory events</p>
+                        <p><strong>Port:</strong> 9042</p>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>🎯 Database Selection Strategy</h3>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li><strong>MySQL:</strong> Traditional relational data with strict ACID requirements</li>
+                        <li><strong>PostgreSQL:</strong> Complex queries and advanced SQL features</li>
+                        <li><strong>MongoDB:</strong> Dynamic schemas and JSON-like documents</li>
+                        <li><strong>Cassandra:</strong> Massive write loads and time-series data</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-diagram">
+                    <div class="layer-section">
+                        <div class="layer-title">🔄 Data Flow Examples</div>
+                        <div class="code-block">
+<strong>User Registration:</strong>
+Client → Gateway → Account Service → <span style="color: #f093fb;">MySQL</span> (users table)
+
+<strong>Item Lookup:</strong>
+Client → Gateway → Item Service → <span style="color: #f093fb;">MongoDB</span> (items collection)
+
+<strong>Order Creation:</strong>
+Client → Gateway → Order Service → <span style="color: #f093fb;">Cassandra</span> (orders table)
+                 ↓
+            Inventory Service → <span style="color: #f093fb;">Cassandra</span> (inventory_by_sku table)
+
+<strong>Payment Processing:</strong>
+Client → Gateway → Payment Service → <span style="color: #f093fb;">MySQL</span> (payments table)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spring Ecosystem -->
+        <div id="spring" class="diagram-section">
+            <div class="diagram-card">
+                <h2 class="diagram-title">
+                    <span class="icon">🍃</span>
+                    Spring Framework Ecosystem
+                </h2>
+                <p class="diagram-description">
+                    Complete Spring Boot 3.3.4 stack with Spring Cloud, Spring Security, Spring Data, and more.
+                    Demonstrates modern enterprise Java development patterns.
+                </p>
+
+                <div class="tech-stack-grid">
+                    <div class="tech-card">
+                        <h3>🚀 Spring Boot</h3>
+                        <p><strong>Version:</strong> 3.3.4</p>
+                        <p>Core framework for all microservices. Auto-configuration, embedded servers, production-ready features.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>☁️ Spring Cloud</h3>
+                        <p><strong>Components:</strong> Gateway, OpenFeign</p>
+                        <p>Microservices infrastructure for routing, load balancing, and inter-service communication.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>🔐 Spring Security</h3>
+                        <p><strong>JWT Authentication</strong></p>
+                        <p>OAuth2 Resource Server, JWT token validation, method-level security.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>💾 Spring Data</h3>
+                        <p><strong>JPA, MongoDB, Cassandra</strong></p>
+                        <p>Repository abstraction with Hibernate ORM for relational databases.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>📨 Spring Kafka</h3>
+                        <p><strong>Event Streaming</strong></p>
+                        <p>Kafka integration for publishing and consuming events across services.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>📊 Spring Actuator</h3>
+                        <p><strong>Health & Metrics</strong></p>
+                        <p>Production-ready endpoints for monitoring, health checks, and metrics.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>✅ Spring Test</h3>
+                        <p><strong>Testing Support</strong></p>
+                        <p>Integration with JUnit 5, Mockito, test containers for comprehensive testing.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>📝 Bean Validation</h3>
+                        <p><strong>JSR-303</strong></p>
+                        <p>Request validation with @NotNull, @NotBlank, @Valid annotations.</p>
+                    </div>
+                </div>
+
+                <div class="architecture-diagram">
+                    <div class="layer-section">
+                        <div class="layer-title">🏗️ Spring Architecture Layers</div>
+                        <div class="code-block">
+┌─────────────────────────────────────────────────────────┐
+│  <span style="color: #4facfe;">@RestController</span> - REST API Endpoints            │
+│  • Request Mapping                                     │
+│  • Input Validation                                    │
+│  • Response Serialization                              │
+└─────────────────────────────────────────────────────────┘
+                        ⬇️
+┌─────────────────────────────────────────────────────────┐
+│  <span style="color: #667eea;">@Service</span> - Business Logic Layer                 │
+│  • Transaction Management (@Transactional)             │
+│  • Business Rules                                      │
+│  • Service Orchestration                               │
+└─────────────────────────────────────────────────────────┘
+                        ⬇️
+┌─────────────────────────────────────────────────────────┐
+│  <span style="color: #f093fb;">@Repository</span> - Data Access Layer                  │
+│  • JpaRepository / MongoRepository                     │
+│  • Custom Queries                                      │
+│  • Database Operations                                 │
+└─────────────────────────────────────────────────────────┘
+                        ⬇️
+┌─────────────────────────────────────────────────────────┐
+│  <span style="color: #fa709a;">Database</span> - Persistence Layer                     │
+│  • MySQL / PostgreSQL / MongoDB / Cassandra           │
+└─────────────────────────────────────────────────────────┘
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>🔧 Key Spring Features Used</h3>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li><strong>Dependency Injection:</strong> @Autowired, Constructor Injection</li>
+                        <li><strong>AOP:</strong> @Transactional for transaction management</li>
+                        <li><strong>Exception Handling:</strong> @RestControllerAdvice, @ExceptionHandler</li>
+                        <li><strong>Configuration:</strong> @Configuration, @Bean, application.yml</li>
+                        <li><strong>Profiles:</strong> dev, docker, test environments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event-Driven Flow -->
+        <div id="kafka" class="diagram-section">
+            <div class="diagram-card">
+                <h2 class="diagram-title">
+                    <span class="icon">📨</span>
+                    Event-Driven Architecture with Kafka
+                </h2>
+                <p class="diagram-description">
+                    Asynchronous communication between services using Apache Kafka. Events enable loose coupling
+                    and eventual consistency across the distributed system.
+                </p>
+
+                <div class="architecture-diagram">
+                    <div class="layer-section">
+                        <div class="layer-title">📬 Kafka Topics & Event Flow</div>
+                        <div class="code-block">
+<strong style="color: #fa709a;">Topic: order.created</strong>
+Publisher: Order Service
+Consumers: Inventory Service, Analytics Service
+Event: { orderId, userId, items[], timestamp }
+
+<strong style="color: #fa709a;">Topic: order.cancelled</strong>
+Publisher: Order Service
+Consumers: Inventory Service (restore stock), Payment Service (refund)
+
+<strong style="color: #fa709a;">Topic: payment.succeeded</strong>
+Publisher: Payment Service
+Consumers: Order Service (update status), Notification Service
+Event: { paymentId, orderId, amount, timestamp }
+
+<strong style="color: #fa709a;">Topic: payment.failed</strong>
+Publisher: Payment Service
+Consumers: Order Service (mark failed), Notification Service
+Event: { paymentId, orderId, reason, timestamp }
+
+<strong style="color: #fa709a;">Topic: payment.refunded</strong>
+Publisher: Payment Service
+Consumers: Order Service, Accounting Service
+Event: { paymentId, orderId, refundAmount, reason }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="architecture-diagram">
+                    <div class="vertical-flow">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">🔄 Complete Order Flow with Events</h3>
+                        
+                        <div class="flow-container">
+                            <div class="service-box">
+                                <div>1️⃣ Client</div>
+                                <div style="font-size: 0.85em;">Create Order</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="service-box">
+                                <div>2️⃣ Order Service</div>
+                                <div style="font-size: 0.85em;">Save to Cassandra</div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="kafka-box" style="width: 300px;">
+                            <div>📨 Kafka: order.created</div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="flow-container">
+                            <div class="service-box">
+                                <div>3️⃣ Inventory</div>
+                                <div style="font-size: 0.85em;">Reserve Stock</div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="flow-container">
+                            <div class="service-box">
+                                <div>4️⃣ Client</div>
+                                <div style="font-size: 0.85em;">Submit Payment</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="service-box">
+                                <div>5️⃣ Payment Service</div>
+                                <div style="font-size: 0.85em;">Process Payment</div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="kafka-box" style="width: 300px;">
+                            <div>📨 Kafka: payment.succeeded</div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="flow-container">
+                            <div class="service-box">
+                                <div>6️⃣ Order Service</div>
+                                <div style="font-size: 0.85em;">Update Status → PAID</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>✨ Benefits of Event-Driven Architecture</h3>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li><strong>Loose Coupling:</strong> Services don't need to know about each other</li>
+                        <li><strong>Scalability:</strong> Consumers can scale independently</li>
+                        <li><strong>Resilience:</strong> Events are persisted; consumers can catch up</li>
+                        <li><strong>Audit Trail:</strong> All events are logged in Kafka</li>
+                        <li><strong>Real-time Updates:</strong> Instant propagation across services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Architecture -->
+        <div id="security" class="diagram-section">
+            <div class="diagram-card">
+                <h2 class="diagram-title">
+                    <span class="icon">🔐</span>
+                    Security Architecture
+                </h2>
+                <p class="diagram-description">
+                    JWT-based authentication with Spring Security OAuth2 Resource Server. Centralized authentication
+                    through Auth Service with token-based authorization at the Gateway level.
+                </p>
+
+                <div class="architecture-diagram">
+                    <div class="vertical-flow">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">🔑 Authentication Flow</h3>
+                        
+                        <div class="flow-container">
+                            <div class="service-box">
+                                <div>1️⃣ Client</div>
+                                <div style="font-size: 0.85em;">POST /auth/login</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="gateway-box">
+                                <div>2️⃣ Gateway</div>
+                                <div style="font-size: 0.85em;">Route to Auth</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="service-box">
+                                <div>3️⃣ Auth Service</div>
+                                <div style="font-size: 0.85em;">Validate Credentials</div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="service-box">
+                            <div>4️⃣ Account Service</div>
+                            <div style="font-size: 0.85em;">Fetch User from MySQL</div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="service-box" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <div>5️⃣ Generate JWT</div>
+                            <div style="font-size: 0.85em;">HS256 Signed Token</div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="service-box">
+                            <div>6️⃣ Return to Client</div>
+                            <div style="font-size: 0.85em;">{ token, expiresIn: 24h }</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="architecture-diagram">
+                    <div class="vertical-flow">
+                        <h3 style="color: #667eea; margin-bottom: 20px;">🛡️ Authorization Flow</h3>
+                        
+                        <div class="flow-container">
+                            <div class="service-box">
+                                <div>1️⃣ Client</div>
+                                <div style="font-size: 0.85em;">Header: Bearer {token}</div>
+                            </div>
+                            <div class="arrow">→</div>
+                            <div class="gateway-box">
+                                <div>2️⃣ Gateway</div>
+                                <div style="font-size: 0.85em;">Extract & Validate JWT</div>
+                            </div>
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div style="background: rgba(67, 233, 123, 0.2); padding: 15px; border-radius: 10px; margin: 15px;">
+                            <strong>✓ Token Valid?</strong> → Forward to Service<br>
+                            <strong>✗ Token Invalid?</strong> → 401 Unauthorized
+                        </div>
+                        
+                        <div class="arrow">⬇️</div>
+                        
+                        <div class="service-box">
+                            <div>3️⃣ Business Service</div>
+                            <div style="font-size: 0.85em;">Process Request</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+<strong style="color: #43e97b;">JWT Token Structure:</strong>
+
+<span style="color: #f093fb;">Header:</span>
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+
+<span style="color: #f093fb;">Payload:</span>
+{
+  "sub": "user-id-123",
+  "email": "user@demo.com",
+  "iat": 1699999999,
+  "exp": 1700086399
+}
+
+<span style="color: #f093fb;">Signature:</span>
+HMACSHA256(base64Url(header) + "." + base64Url(payload), secret)
+                </div>
+
+                <div class="highlight">
+                    <h3>🔒 Security Features Implemented</h3>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li><strong>JWT Authentication:</strong> Stateless token-based auth</li>
+                        <li><strong>Password Hashing:</strong> BCrypt with strength 10</li>
+                        <li><strong>Token Blacklist:</strong> Revoked tokens stored in PostgreSQL</li>
+                        <li><strong>CORS Configuration:</strong> Cross-origin request handling</li>
+                        <li><strong>Method Security:</strong> @PreAuthorize annotations</li>
+                        <li><strong>HTTPS Ready:</strong> SSL/TLS support for production</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment View -->
+        <div id="deployment" class="diagram-section">
+            <div class="diagram-card">
+                <h2 class="diagram-title">
+                    <span class="icon">🐳</span>
+                    Docker Deployment Architecture
+                </h2>
+                <p class="diagram-description">
+                    Complete containerized deployment with Docker Compose. One-command deployment with all services,
+                    databases, and infrastructure components.
+                </p>
+
+                <div class="architecture-diagram">
+                    <div class="code-block">
+<strong style="color: #4facfe;">docker-compose.yml Structure:</strong>
+
+services:
+  ├── <span style="color: #667eea;">gateway</span>                (Spring Cloud Gateway)
+  ├── <span style="color: #667eea;">auth-service</span>          (JWT Authentication)
+  ├── <span style="color: #667eea;">account-service</span>       (User Management)
+  ├── <span style="color: #667eea;">item-service</span>          (Product Catalog)
+  ├── <span style="color: #667eea;">inventory-service</span>     (Stock Management)
+  ├── <span style="color: #667eea;">order-service</span>         (Order Processing)
+  ├── <span style="color: #667eea;">payment-service</span>       (Payment Processing)
+  │
+  ├── <span style="color: #f093fb;">mysql</span>                 (Account + Payment DB)
+  ├── <span style="color: #f093fb;">postgres</span>              (Auth Token DB)
+  ├── <span style="color: #f093fb;">mongo</span>                 (Item Catalog DB)
+  ├── <span style="color: #f093fb;">cassandra</span>             (Orders + Inventory DB)
+  ├── <span style="color: #f093fb;">cassandra-init</span>        (Schema Initialization)
+  │
+  ├── <span style="color: #fa709a;">zookeeper</span>             (Kafka Coordination)
+  ├── <span style="color: #fa709a;">kafka</span>                 (Event Streaming)
+  └── <span style="color: #fa709a;">kafka-ui</span>              (Kafka Management UI)
+                    </div>
+                </div>
+
+                <div class="tech-stack-grid">
+                    <div class="tech-card">
+                        <h3>🚀 Quick Start</h3>
+                        <div style="text-align: left; font-size: 0.9em;">
+                            <code>docker-compose up -d</code><br><br>
+                            Starts all 15 containers in correct dependency order
+                        </div>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>🔍 Health Check</h3>
+                        <div style="text-align: left; font-size: 0.9em;">
+                            <code>docker-compose ps</code><br><br>
+                            View status of all running containers
+                        </div>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>📊 View Logs</h3>
+                        <div style="text-align: left; font-size: 0.9em;">
+                            <code>docker-compose logs -f</code><br><br>
+                            Stream logs from all services
+                        </div>
+                    </div>
+
+                    <div class="tech-card">
+                        <h3>🛑 Stop All</h3>
+                        <div style="text-align: left; font-size: 0.9em;">
+                            <code>docker-compose down</code><br><br>
+                            Stop and remove all containers
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight">
+                    <h3>📦 Container Configuration</h3>
+                    <ul style="margin-left: 20px; line-height: 2;">
+                        <li><strong>Base Image:</strong> eclipse-temurin:21-jre (Java 21)</li>
+                        <li><strong>Build Tool:</strong> Maven 3.8+ with Spring Boot plugin</li>
+                        <li><strong>Networking:</strong> Bridge network for inter-container communication</li>
+                        <li><strong>Volumes:</strong> Database persistence and init scripts</li>
+                        <li><strong>Health Checks:</strong> Spring Actuator /health endpoints</li>
+                        <li><strong>Environment:</strong> SPRING_PROFILES_ACTIVE=docker</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-diagram">
+                    <div class="layer-section">
+                        <div class="layer-title">🌐 Network Ports Mapping</div>
+                        <div class="code-block">
+<strong>External Ports (Host → Container):</strong>
+
+<span style="color: #4facfe;">Gateway & UIs:</span>
+8080  → Gateway (API Entry Point)
+8082  → Kafka UI (Event Monitoring)
+
+<span style="color: #667eea;">Microservices:</span>
+9000  → Auth Service
+9001  → Account Service
+9002  → Item Service
+9003  → Inventory Service
+9004  → Order Service
+9005  → Payment Service
+
+<span style="color: #f093fb;">Databases:</span>
+3306  → MySQL
+5432  → PostgreSQL
+27017 → MongoDB
+9042  → Cassandra
+
+<span style="color: #fa709a;">Message Queue:</span>
+9092  → Kafka Broker
+2181  → Zookeeper
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDiagram(id) {
+            // Hide all diagrams
+            document.querySelectorAll('.diagram-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected diagram
+            document.getElementById(id).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+server:
+  port: 9003
+
+spring:
+  application:
+    name: inventory-service
+  
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: please-change-this-to-a-long-random-secret-string-at-least-256-bits-for-HS256-algorithm
+  
+  data:
+    cassandra:
+      keyspace-name: inventory_keyspace
+      contact-points: localhost
+      port: 9042
+      local-datacenter: datacenter1
+      schema-action: create-if-not-exists
+  
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: inventory-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.icc.inventoryservice: DEBUG
+    org.springframework.kafka: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

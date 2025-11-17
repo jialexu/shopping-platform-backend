@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Service - Live API Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .section {
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
+        }
+        
+        h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .output {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .info {
+            color: #17a2b8;
+        }
+        
+        .token-display {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #666;
+        }
+        
+        .endpoints {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .endpoints code {
+            color: #667eea;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Shopping Service Live Demo</h1>
+        <p class="subtitle">Full-Stack Microservices Architecture with Spring Boot & Multiple Databases</p>
+        
+        <div class="tech-stack">
+            <span class="badge">Spring Boot 3.3.4</span>
+            <span class="badge">Spring Cloud Gateway</span>
+            <span class="badge">JWT Security</span>
+            <span class="badge">MySQL</span>
+            <span class="badge">MongoDB</span>
+            <span class="badge">Cassandra</span>
+            <span class="badge">Kafka Events</span>
+            <span class="badge">Docker</span>
+            <span class="badge">JUnit + Mockito</span>
+        </div>
+
+        <div class="endpoints">
+            <strong>🔗 API Gateway:</strong> <code>http://localhost:8080/api</code><br>
+            <strong>📚 Swagger UI:</strong> <code>http://localhost:8080/swagger-ui.html</code><br>
+            <strong>🎛️ Kafka UI:</strong> <code>http://localhost:8082</code>
+        </div>
+
+        <!-- Step 1: Registration -->
+        <div class="section">
+            <h3>
+                <span class="step-number">1</span>
+                User Registration (Spring Data JPA + MySQL)
+            </h3>
+            <input id="regEmail" type="email" placeholder="Email" value="demo@shop.com">
+            <input id="regPassword" type="password" placeholder="Password" value="SecurePass123!">
+            <input id="regUsername" placeholder="Username" value="DemoUser">
+            <input id="regAddress" placeholder="Shipping Address" value="123 Main St, Seattle, WA 98101">
+            <button onclick="register()">🆕 Register New User</button>
+            <div id="registerOutput" class="output"></div>
+        </div>
+
+        <!-- Step 2: Login -->
+        <div class="section">
+            <h3>
+                <span class="step-number">2</span>
+                Authentication (JWT Token + Spring Security)
+            </h3>
+            <input id="loginEmail" type="email" placeholder="Email" value="demo@shop.com">
+            <input id="loginPassword" type="password" placeholder="Password" value="SecurePass123!">
+            <button onclick="login()">🔐 Login & Get JWT Token</button>
+            <div id="loginOutput" class="output"></div>
+            <div id="tokenDisplay" class="token-display" style="display:none;"></div>
+        </div>
+
+        <!-- Step 3: Browse Items -->
+        <div class="section">
+            <h3>
+                <span class="step-number">3</span>
+                Product Catalog (MongoDB Document Store)
+            </h3>
+            <button onclick="createSampleItem()">➕ Create Sample Item</button>
+            <button onclick="getItems()">📋 Get All Items</button>
+            <div id="itemsOutput" class="output"></div>
+        </div>
+
+        <!-- Step 4: Check Inventory -->
+        <div class="section">
+            <h3>
+                <span class="step-number">4</span>
+                Inventory Management (Cassandra)
+            </h3>
+            <input id="inventorySku" placeholder="Item SKU" value="">
+            <button onclick="checkInventory()">📦 Check Inventory</button>
+            <button onclick="initInventory()">🔄 Initialize Stock (100 units)</button>
+            <div id="inventoryOutput" class="output"></div>
+        </div>
+
+        <!-- Step 5: Create Order -->
+        <div class="section">
+            <h3>
+                <span class="step-number">5</span>
+                Order Creation (OpenFeign + Service Integration)
+            </h3>
+            <input id="orderSku" placeholder="Item SKU" value="">
+            <input id="orderQty" type="number" placeholder="Quantity" value="2" min="1">
+            <button onclick="createOrder()">🛍️ Create Order</button>
+            <button onclick="getOrders()">📜 View My Orders</button>
+            <div id="orderOutput" class="output"></div>
+        </div>
+
+        <!-- Step 6: Payment -->
+        <div class="section">
+            <h3>
+                <span class="step-number">6</span>
+                Payment Processing (Idempotency + Kafka Events)
+            </h3>
+            <input id="paymentOrderId" placeholder="Order ID" value="">
+            <input id="paymentAmount" type="number" placeholder="Amount" value="0.00" step="0.01">
+            <button onclick="submitPayment()">💳 Submit Payment</button>
+            <button onclick="processPayment()">✅ Process Payment (Simulate Success)</button>
+            <button onclick="checkPaymentStatus()">🔍 Check Payment Status</button>
+            <button onclick="refundPayment()">💰 Refund Payment</button>
+            <div id="paymentOutput" class="output"></div>
+        </div>
+
+        <!-- Step 7: Event Verification -->
+        <div class="section">
+            <h3>
+                <span class="step-number">7</span>
+                Event-Driven Updates (Apache Kafka)
+            </h3>
+            <p style="color: #666; margin-bottom: 10px;">
+                After payment, Kafka events trigger automatic order status updates
+            </p>
+            <button onclick="verifyKafkaEvents()">🔄 Verify Async Updates</button>
+            <div id="kafkaOutput" class="output"></div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Chuwa Final Project - Microservices Shopping Platform</strong></p>
+            <p>Demonstrating Spring Boot, 4 Databases, Kafka Events, JWT Security & More</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let authToken = '';
+        let currentUserId = '';
+        let lastCreatedItemSku = '';
+        let lastCreatedOrderId = '';
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
+            element.innerHTML = `<span class="${type}">[${timestamp}] ${prefix} ${message}</span>\n` + element.innerHTML;
+        }
+
+        function showJson(elementId, data) {
+            document.getElementById(elementId).textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function register() {
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const username = document.getElementById('regUsername').value;
+            const address = document.getElementById('regAddress').value;
+
+            const data = {
+                email: email,
+                username: username,
+                password: password,
+                shippingAddress: address,
+                billingAddress: address,
+                paymentMethod: "Visa ****1234"
+            };
+
+            try {
+                log('registerOutput', 'Sending registration request...', 'info');
+                const response = await fetch(`${API_BASE}/accounts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.status === 409) {
+                    log('registerOutput', '⚠ User already exists! Try logging in with existing credentials.', 'error');
+                    return;
+                }
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                currentUserId = result.id;
+                
+                log('registerOutput', `User registered successfully! ID: ${result.id}`, 'success');
+                showJson('registerOutput', result);
+                
+                // Auto-populate login fields
+                document.getElementById('loginEmail').value = email;
+                document.getElementById('loginPassword').value = password;
+            } catch (error) {
+                log('registerOutput', `Registration failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const data = { email, password };
+
+            try {
+                log('loginOutput', 'Authenticating...', 'info');
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                authToken = result.token;
+                
+                // Extract user ID from JWT payload
+                const payload = JSON.parse(atob(authToken.split('.')[1]));
+                currentUserId = payload.sub;
+                
+                log('loginOutput', '✓ Authentication successful!', 'success');
+                log('loginOutput', `User ID: ${currentUserId}`, 'info');
+                
+                const tokenDisplay = document.getElementById('tokenDisplay');
+                tokenDisplay.style.display = 'block';
+                tokenDisplay.innerHTML = `<strong>JWT Token:</strong><br>${authToken.substring(0, 80)}...<br><small>Valid for 24 hours</small>`;
+                
+                showJson('loginOutput', { userId: currentUserId, tokenIssued: new Date().toISOString() });
+            } catch (error) {
+                log('loginOutput', `Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function createSampleItem() {
+            if (!authToken) {
+                log('itemsOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const sku = `LAPTOP-${Date.now()}`;
+            const upc = `${Math.floor(Math.random() * 1000000000000)}`;
+            
+            const itemData = {
+                name: "Dell XPS 15 Laptop",
+                description: "High-performance laptop with Intel i9, 32GB RAM, 1TB SSD",
+                price: 2499.99,
+                sku: sku,
+                upc: upc,
+                category: "Electronics",
+                brand: "Dell",
+                imageUrls: ["https://example.com/laptop1.jpg", "https://example.com/laptop2.jpg"],
+                specifications: {
+                    processor: "Intel Core i9-13900H",
+                    ram: "32GB DDR5",
+                    storage: "1TB NVMe SSD",
+                    display: "15.6 inch 4K OLED"
+                },
+                tags: ["laptop", "business", "gaming"]
+            };
+
+            try {
+                log('itemsOutput', 'Creating new item...', 'info');
+                const response = await fetch(`${API_BASE}/items`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(itemData)
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                lastCreatedItemSku = result.upc || result.sku;
+                
+                log('itemsOutput', `Item created! SKU: ${lastCreatedItemSku}`, 'success');
+                showJson('itemsOutput', result);
+                
+                // Auto-populate SKU fields
+                document.getElementById('inventorySku').value = lastCreatedItemSku;
+                document.getElementById('orderSku').value = lastCreatedItemSku;
+            } catch (error) {
+                log('itemsOutput', `Failed to create item: ${error.message}`, 'error');
+            }
+        }
+
+        async function getItems() {
+            if (!authToken) {
+                log('itemsOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            try {
+                log('itemsOutput', 'Fetching items from MongoDB...', 'info');
+                const response = await fetch(`${API_BASE}/items`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                log('itemsOutput', `Retrieved ${result.length} items`, 'success');
+                showJson('itemsOutput', result);
+            } catch (error) {
+                log('itemsOutput', `Failed to fetch items: ${error.message}`, 'error');
+            }
+        }
+
+        async function initInventory() {
+            if (!authToken) {
+                log('inventoryOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const sku = document.getElementById('inventorySku').value;
+            if (!sku) {
+                log('inventoryOutput', 'Please enter a SKU', 'error');
+                return;
+            }
+
+            try {
+                log('inventoryOutput', `Initializing inventory for SKU: ${sku}...`, 'info');
+                const response = await fetch(`${API_BASE}/inventory/${sku}/init?quantity=100`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                // API returns plain text, not JSON
+                const result = await response.text();
+                log('inventoryOutput', '✓ Inventory initialized: 100 units available', 'success');
+                document.getElementById('inventoryOutput').textContent = result;
+            } catch (error) {
+                log('inventoryOutput', `Failed to initialize inventory: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkInventory() {
+            if (!authToken) {
+                log('inventoryOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const sku = document.getElementById('inventorySku').value;
+            if (!sku) {
+                log('inventoryOutput', 'Please enter a SKU', 'error');
+                return;
+            }
+
+            try {
+                log('inventoryOutput', `Checking inventory for SKU: ${sku}...`, 'info');
+                const response = await fetch(`${API_BASE}/inventory/${sku}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                log('inventoryOutput', `Available: ${result.quantity} units`, 'success');
+                showJson('inventoryOutput', result);
+            } catch (error) {
+                log('inventoryOutput', `Failed to check inventory: ${error.message}`, 'error');
+            }
+        }
+
+        async function createOrder() {
+            if (!authToken) {
+                log('orderOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const sku = document.getElementById('orderSku').value;
+            const quantity = parseInt(document.getElementById('orderQty').value);
+
+            if (!sku || !quantity) {
+                log('orderOutput', 'Please enter SKU and quantity', 'error');
+                return;
+            }
+
+            const orderData = {
+                userId: currentUserId,
+                items: [{ sku: sku, quantity: quantity }],
+                shippingAddress: "123 Main St, Seattle, WA 98101"
+            };
+
+            try {
+                log('orderOutput', 'Creating order...', 'info');
+                const response = await fetch(`${API_BASE}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                lastCreatedOrderId = result.id;
+                
+                log('orderOutput', `Order created! ID: ${result.id}, Total: $${result.totalAmount}`, 'success');
+                showJson('orderOutput', result);
+                
+                // Auto-populate payment fields
+                document.getElementById('paymentOrderId').value = result.id;
+                document.getElementById('paymentAmount').value = result.totalAmount;
+            } catch (error) {
+                log('orderOutput', `Failed to create order: ${error.message}`, 'error');
+            }
+        }
+
+        async function getOrders() {
+            if (!authToken || !lastCreatedOrderId) {
+                log('orderOutput', 'Please create an order first!', 'error');
+                return;
+            }
+
+            try {
+                log('orderOutput', 'Fetching order details...', 'info');
+                const response = await fetch(`${API_BASE}/orders/${lastCreatedOrderId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                log('orderOutput', `Order ${result.id} - Status: ${result.status}`, 'success');
+                showJson('orderOutput', result);
+            } catch (error) {
+                log('orderOutput', `Failed to fetch order: ${error.message}`, 'error');
+            }
+        }
+
+        async function submitPayment() {
+            if (!authToken) {
+                log('paymentOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const orderId = document.getElementById('paymentOrderId').value;
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+
+            if (!orderId || !amount) {
+                log('paymentOutput', 'Please enter order ID and amount', 'error');
+                return;
+            }
+
+            const paymentData = {
+                orderId: orderId,
+                amount: amount,
+                paymentMethod: "CREDIT_CARD"
+            };
+
+            try {
+                log('paymentOutput', 'Submitting payment...', 'info');
+                const response = await fetch(`${API_BASE}/payments`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(paymentData)
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                log('paymentOutput', `✅ Payment created! ID: ${result.id}, Status: ${result.status}`, 'success');
+                log('paymentOutput', `⚠ Payment is PENDING. Click "Process Payment" to simulate success and trigger Kafka event.`, 'info');
+                showJson('paymentOutput', result);
+            } catch (error) {
+                log('paymentOutput', `Payment failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function processPayment() {
+            if (!authToken) {
+                log('paymentOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const orderId = document.getElementById('paymentOrderId').value;
+            if (!orderId) {
+                log('paymentOutput', 'Please enter order ID first', 'error');
+                return;
+            }
+
+            try {
+                // First get the payment to get its ID
+                log('paymentOutput', 'Looking up payment...', 'info');
+                const getResponse = await fetch(`${API_BASE}/payments/order/${orderId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!getResponse.ok) {
+                    throw new Error('Payment not found. Please submit payment first.');
+                }
+
+                const payment = await getResponse.json();
+                
+                // Update payment status to SUCCEEDED
+                log('paymentOutput', `Processing payment ${payment.id}...`, 'info');
+                const updateResponse = await fetch(`${API_BASE}/payments/${payment.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'SUCCEEDED',
+                        providerRef: 'DEMO_' + Date.now(),
+                        description: 'Payment processed successfully (demo)'
+                    })
+                });
+
+                if (!updateResponse.ok) throw new Error(`HTTP ${updateResponse.status}`);
+                
+                const result = await updateResponse.json();
+                log('paymentOutput', `✅ Payment processed! Status: ${result.status}`, 'success');
+                log('paymentOutput', `📨 Kafka event published to topic: payment.succeeded`, 'success');
+                log('paymentOutput', `🔄 Order service should receive event and update order status to PAID`, 'info');
+                showJson('paymentOutput', result);
+            } catch (error) {
+                log('paymentOutput', `Process failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkPaymentStatus() {
+            if (!authToken) {
+                log('paymentOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const orderId = document.getElementById('paymentOrderId').value;
+            if (!orderId) {
+                log('paymentOutput', 'Please enter an order ID', 'error');
+                return;
+            }
+
+            try {
+                log('paymentOutput', `Checking payment status for order ${orderId}...`, 'info');
+                const response = await fetch(`${API_BASE}/payments/order/${orderId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.status === 404) {
+                    log('paymentOutput', '⚠ No payment found for this order ID. Make sure payment was submitted.', 'error');
+                    return;
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                log('paymentOutput', `✓ Payment found - Status: ${result.status}`, 'success');
+                log('paymentOutput', `Payment ID: ${result.id}, Amount: $${result.amount}`, 'info');
+                showJson('paymentOutput', result);
+            } catch (error) {
+                log('paymentOutput', `Failed to check payment: ${error.message}`, 'error');
+            }
+        }
+
+        async function refundPayment() {
+            if (!authToken) {
+                log('paymentOutput', 'Please login first!', 'error');
+                return;
+            }
+
+            const orderId = document.getElementById('paymentOrderId').value;
+            if (!orderId) {
+                log('paymentOutput', 'Please enter order ID first', 'error');
+                return;
+            }
+
+            try {
+                // First get the payment to get its ID
+                log('paymentOutput', 'Looking up payment for refund...', 'info');
+                const getResponse = await fetch(`${API_BASE}/payments/order/${orderId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!getResponse.ok) {
+                    throw new Error('Payment not found. Cannot process refund.');
+                }
+
+                const payment = await getResponse.json();
+                
+                if (payment.status !== 'SUCCEEDED') {
+                    throw new Error(`Cannot refund payment with status: ${payment.status}. Only SUCCEEDED payments can be refunded.`);
+                }
+                
+                // Process refund
+                log('paymentOutput', `Processing refund for payment ${payment.id}...`, 'info');
+                const refundResponse = await fetch(`${API_BASE}/payments/${payment.id}/refund`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: payment.amount,
+                        reason: 'Customer requested refund (demo)'
+                    })
+                });
+
+                if (!refundResponse.ok) {
+                    const errorText = await refundResponse.text();
+                    throw new Error(`HTTP ${refundResponse.status}: ${errorText}`);
+                }
+                
+                const result = await refundResponse.json();
+                log('paymentOutput', `✅ Refund processed! Status: ${result.status}`, 'success');
+                log('paymentOutput', `💸 Amount refunded: $${result.amount}`, 'success');
+                log('paymentOutput', `📨 Kafka event published to topic: payment.refunded`, 'info');
+                showJson('paymentOutput', result);
+            } catch (error) {
+                log('paymentOutput', `Refund failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function verifyKafkaEvents() {
+            if (!authToken || !lastCreatedOrderId) {
+                log('kafkaOutput', 'Please create and pay for an order first!', 'error');
+                return;
+            }
+
+            try {
+                log('kafkaOutput', `Starting verification for Order ID: ${lastCreatedOrderId}`, 'info');
+                log('kafkaOutput', 'Polling order status every 2 seconds (max 15 seconds)...', 'info');
+                
+                let attempts = 0;
+                const maxAttempts = 8; // Increased to 8 attempts (16 seconds)
+                
+                const checkStatus = async () => {
+                    attempts++;
+                    const response = await fetch(`${API_BASE}/orders/${lastCreatedOrderId}`, {
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'PAID' || result.status === 'COMPLETED') {
+                        log('kafkaOutput', `✓ SUCCESS! Order status updated via Kafka: ${result.status}`, 'success');
+                        log('kafkaOutput', '✓ Event flow: Payment Service → Kafka (payment.succeeded) → Order Service', 'success');
+                        log('kafkaOutput', '✓ Asynchronous communication working! Check Kafka UI: http://localhost:8082', 'info');
+                        showJson('kafkaOutput', result);
+                    } else if (attempts < maxAttempts) {
+                        log('kafkaOutput', `Attempt ${attempts}/${maxAttempts}: Status = ${result.status}, waiting...`, 'info');
+                        setTimeout(checkStatus, 2000);
+                    } else {
+                        log('kafkaOutput', `⚠ Status still ${result.status} after ${attempts} attempts (${attempts * 2}s)`, 'error');
+                        log('kafkaOutput', '⚠ Possible issues: Kafka not running, consumer not listening, or event not published', 'error');
+                        log('kafkaOutput', 'Check logs: docker compose logs order-service payment-service kafka', 'info');
+                        showJson('kafkaOutput', result);
+                    }
+                };
+                
+                checkStatus();
+            } catch (error) {
+                log('kafkaOutput', `Failed to verify events: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

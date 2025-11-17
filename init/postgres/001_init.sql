@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS token_blacklist (
+  jti VARCHAR(64) PRIMARY KEY,
+  expires_at TIMESTAMP NOT NULL
+);

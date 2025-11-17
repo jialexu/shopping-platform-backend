@@ -1,0 +1,30 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: please-change-this-to-a-long-random-secret-string-at-least-256-bits-for-HS256-algorithm
+
+  data:
+    cassandra:
+      contact-points: cassandra
+      port: 9042
+      keyspace-name: order_keyspace
+      local-datacenter: datacenter1
+
+  kafka:
+    bootstrap-servers: kafka:9092
+
+cassandra:
+  contact-points: cassandra
+  port: 9042
+  keyspace: order_keyspace
+  datacenter: datacenter1
+
+feign:
+  client:
+    config:
+      item-service:
+        url: http://item-service:9002
+      inventory-service:
+        url: http://inventory-service:9003

@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: order-service
+  
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: order-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.icc.orderservice.event,com.icc.payment.service,com.icc.payment.event"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.icc.orderservice.event.PaymentEvent
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: please-change-this-to-a-long-random-secret-string-at-least-256-bits-for-HS256-algorithm
+
+server:
+  port: ${SERVER_PORT:9004}
+
+cassandra:
+  contact-points: ${CASSANDRA_CONTACT_POINTS:localhost}
+  port: ${CASSANDRA_PORT:9042}
+  keyspace: ${CASSANDRA_KEYSPACE:orderservice}
+  datacenter: ${CASSANDRA_DATACENTER:datacenter1}
+
+app:
+  services:
+    item-service:
+      url: ${ITEM_SERVICE_URL:http://item-service:9002}
+    inventory-service:
+      url: ${INVENTORY_SERVICE_URL:http://inventory-service:9003}
+
+logging:
+  level:
+    com.icc.orderservice: DEBUG
+    org.springframework.kafka: INFO
+    com.datastax.oss.driver: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

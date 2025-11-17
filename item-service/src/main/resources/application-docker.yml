@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongo:27017/item
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: please-change-this-to-a-long-random-secret-string-at-least-256-bits-for-HS256-algorithm
+
+  kafka:
+    bootstrap-servers: kafka:9092

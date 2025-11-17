@@ -1,0 +1,14 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: please-change-this-to-a-long-random-secret-string-at-least-256-bits-for-HS256-algorithm
+
+  datasource:
+    url: jdbc:mysql://mysql:3306/payment
+    username: root
+    password: root
+
+  kafka:
+    bootstrap-servers: kafka:9092

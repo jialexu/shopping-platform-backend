@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Service Demo Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        button.reset {
+            background: #e74c3c;
+        }
+        
+        button.reset:hover {
+            background: #c0392b;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .step {
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .step.pending {
+            border-color: #95a5a6;
+            background-color: #f8f9fa;
+        }
+        
+        .step.running {
+            border-color: #f39c12;
+            background-color: #fef9e7;
+            animation: pulse 2s infinite;
+        }
+        
+        .step.success {
+            border-color: #27ae60;
+            background-color: #d5f4e6;
+        }
+        
+        .step.error {
+            border-color: #e74c3c;
+            background-color: #fadbd8;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .step-number {
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step.success .step-number {
+            background: #27ae60;
+        }
+        
+        .step.error .step-number {
+            background: #e74c3c;
+        }
+        
+        .step.running .step-number {
+            background: #f39c12;
+        }
+        
+        .step-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 15px;
+            flex-grow: 1;
+        }
+        
+        .status-icon {
+            font-size: 20px;
+        }
+        
+        .step-content {
+            margin-top: 15px;
+        }
+        
+        .step-message {
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .step-error {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .step-data {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Shopping Service Demo Dashboard</h1>
+        
+        <div class="controls">
+            <button id="startBtn">Start Demo</button>
+            <button id="resetBtn" class="reset">Reset Demo</button>
+            <button id="refreshBtn">Refresh Status</button>
+        </div>
+        
+        <div id="steps" class="steps">
+            <!-- Steps will be populated by JavaScript -->
+        </div>
+        
+        <div class="footer">
+            <p>This demo showcases the microservices architecture with service health checks, user management, inventory, orders, and payment processing.</p>
+            <p><strong>Note:</strong> The payment step is expected to fail with a 500 error - this is the issue we're investigating!</p>
+        </div>
+    </div>
+
+    <script>
+        let isRunning = false;
+        
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const stepsContainer = document.getElementById('steps');
+        
+        startBtn.addEventListener('click', startDemo);
+        resetBtn.addEventListener('click', resetDemo);
+        refreshBtn.addEventListener('click', refreshStatus);
+        
+        async function startDemo() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            startBtn.disabled = true;
+            startBtn.textContent = 'Demo Running...';
+            
+            try {
+                const response = await fetch('/api/demo/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    startStatusPolling();
+                } else {
+                    alert('Failed to start demo: ' + result.error);
+                    resetButtonState();
+                }
+            } catch (error) {
+                alert('Error starting demo: ' + error.message);
+                resetButtonState();
+            }
+        }
+        
+        async function resetDemo() {
+            try {
+                const response = await fetch('/api/demo/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    resetButtonState();
+                    stepsContainer.innerHTML = '<p style="text-align: center; color: #666;">Click "Start Demo" to begin the demonstration</p>';
+                }
+            } catch (error) {
+                alert('Error resetting demo: ' + error.message);
+            }
+        }
+        
+        async function refreshStatus() {
+            try {
+                const response = await fetch('/api/demo/status');
+                const result = await response.json();
+                updateStepsDisplay(result.steps);
+            } catch (error) {
+                console.error('Error refreshing status:', error);
+            }
+        }
+        
+        function startStatusPolling() {
+            const interval = setInterval(async () => {
+                await refreshStatus();
+                
+                // Check if demo is complete (all steps are either success or error, none are running)
+                const response = await fetch('/api/demo/status');
+                const result = await response.json();
+                const hasRunningSteps = result.steps.some(step => step.status === 'running');
+                
+                if (!hasRunningSteps && result.steps.length > 0) {
+                    clearInterval(interval);
+                    resetButtonState();
+                }
+            }, 1000);
+        }
+        
+        function resetButtonState() {
+            isRunning = false;
+            startBtn.disabled = false;
+            startBtn.textContent = 'Start Demo';
+        }
+        
+        function updateStepsDisplay(steps) {
+            if (!steps || steps.length === 0) {
+                return;
+            }
+            
+            stepsContainer.innerHTML = '';
+            
+            steps.forEach(step => {
+                const stepElement = document.createElement('div');
+                stepElement.className = `step ${step.status}`;
+                
+                const statusIcon = getStatusIcon(step.status);
+                
+                stepElement.innerHTML = `
+                    <div class="step-header">
+                        <div class="step-number">${step.id}</div>
+                        <div class="step-title">${step.name}</div>
+                        <div class="status-icon">${statusIcon}</div>
+                    </div>
+                    <div class="step-content">
+                        ${step.message ? `<div class="step-message">${step.message}</div>` : ''}
+                        ${step.error ? `<div class="step-error">Error: ${step.error}</div>` : ''}
+                        ${step.data ? `<div class="step-data">${JSON.stringify(step.data, null, 2)}</div>` : ''}
+                    </div>
+                `;
+                
+                stepsContainer.appendChild(stepElement);
+            });
+        }
+        
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'pending': return '⏳';
+                case 'running': return '🔄';
+                case 'success': return '✅';
+                case 'error': return '❌';
+                default: return '⏳';
+            }
+        }
+        
+        // Initial load
+        refreshStatus();
+    </script>
+</body>
+</html>

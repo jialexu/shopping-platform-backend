@@ -1,0 +1,56 @@
+server:
+  port: 9002
+
+spring:
+  application:
+    name: item-service
+  
+  data:
+    mongodb:
+      uri: mongodb://mongo:27017/item
+      auto-index-creation: false
+  
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret: please-change-this-to-a-long-random-secret-string-at-least-256-bits-for-HS256-algorithm
+  
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: item-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+logging:
+  level:
+    com.icc.itemservice: DEBUG
+    com.icc.itemservice.controller: TRACE
+    org.springframework.data.mongodb: DEBUG
+    org.springframework.web: TRACE
+    org.springframework.web.servlet.mvc.method.annotation: TRACE
+    org.springframework.security: DEBUG
+    org.springframework.boot.web.servlet: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
