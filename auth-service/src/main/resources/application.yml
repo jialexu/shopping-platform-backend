@@ -1,0 +1,44 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: auth-service
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: basic
+
+jwt:
+  secret: "please-change-this-to-a-long-random-secret-string-at-least-256-bits-for-HS256-algorithm"
+  expiration: 3600
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    com.icc.auth: DEBUG
+    org.springframework.security: DEBUG
+    feign: DEBUG
+
+account-service:
+  url: http://account-service:9001

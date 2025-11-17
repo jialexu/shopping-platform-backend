@@ -1,0 +1,83 @@
+# Docker Compose for Account Service Local Development
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: account-postgres
+    environment:
+      POSTGRES_DB: accountdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - icc-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: account-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    networks:
+      - icc-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: account-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - icc-network
+
+  account-service:
+    build: .
+    container_name: account-service
+    ports:
+      - "9001:9001"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: accountdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JWT_ISSUER_URI: http://auth-service:9000
+      JWT_JWK_SET_URI: http://auth-service:9000/.well-known/jwks.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - icc-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9001/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+
+networks:
+  icc-network:
+    driver: bridge

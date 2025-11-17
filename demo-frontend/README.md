@@ -1,6 +1,6 @@
 # Shopping Service Demo Frontend
 
-A TypeScript-based web dashboard for demonstrating the Shopping Service microservices architecture.
+A TypeScript-based web dashboard for demonstrating the Shopping Service microservices architecture. Generated from Github Copilot Agent Coding using Claude Sonnet 4.5 model, only for demo purpose, does not affect backend logics.
 
 ## Features
 

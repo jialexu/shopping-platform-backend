@@ -1,0 +1,12 @@
+.mvn/
+*.class
+*.war
+*.ear
+.DS_Store
+.idea
+*.iml
+.vscode
+*.log
+.git
+.gitignore
+README.md
