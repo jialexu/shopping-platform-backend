@@ -9,6 +9,222 @@
 
 ---
 
+## 🎬 HOW TO START THE INTERVIEW
+
+### **First 30 Seconds (Before Screen Share)**
+
+**When they first greet you:**
+
+1. **Smile and make eye contact**
+   - "Thanks so much for taking the time today!"
+   - "I'm excited to walk through what I've built"
+
+2. **Ask about screen share setup**
+   - "Should I go ahead and share my screen?"
+   - "Can you see clearly when I share?"
+   - Wait for confirmation before proceeding
+
+3. **Be friendly but professional**
+   - Don't over-apologize ("Sorry if this isn't perfect...")
+   - Don't rush into code immediately
+   - Let them settle in
+
+---
+
+### **First Words on Screen Share (After they confirm they can see)**
+
+> "Great! So, I want to start with a quick overview of what I built, then walk through the actual code and show how I used AI strategically. Sound good?"
+
+**Wait for a nod or verbal "yes" before proceeding.**
+
+This achieves:
+✅ Sets the agenda (they know what to expect)
+✅ Shows confidence (you know where you're going)
+✅ Gets buy-in (they agree to the structure)
+
+---
+
+## 🗣️ HOW TO COMMUNICATE DURING THE INTERVIEW
+
+### **Pacing & Transitions**
+
+**Move through sections like this:**
+
+```
+[Part 1: Overview] (2 min)
+"Okay, so that's the high level. Now let me show you the architecture..."
+
+[Part 2: Demo Frontend] (1 min)
+"Here's the user interface. Behind the scenes, let me show you the code..."
+
+[Part 3: Code Walkthrough] (5 min)
+"Starting with the Controller... now the Service... now the Repository...
+And here are the tests I wrote to validate this."
+
+[Part 4: AI's Role] (2 min)
+"Here's where AI helped. AI generated the initial scaffold, but I enhanced it..."
+
+[Part 5: Auth Example] (2 min)
+"Let me show another example with the Auth Service, because this is where 
+AI really helped me think through design trade-offs..."
+
+[Pause for Questions] (3-4 min)
+```
+
+### **Tone & Delivery Rules**
+
+| Rule | Why | Example |
+|------|-----|---------|
+| **Speak slowly** | They need to follow | Pause after each sentence. Don't rush. |
+| **Point to the code** | Helps them see what you're talking about | "Notice here [move cursor]... this @Valid annotation" |
+| **Use confident language** | Projects ownership | "I added this because..." NOT "I think maybe..." |
+| **Say "I"** | Takes ownership | "I validated it with tests" NOT "The tests validate..." |
+| **Pause after key points** | Lets it sink in | Say something important, then pause 2 seconds |
+| **Admit unknowns confidently** | Shows honesty | "That part I'm not 100% sure about, so I tested it extensively" |
+| **Explain jargon** | Not everyone knows Java | "Spring Data is a framework that lets us write queries as method names" |
+
+---
+
+### **Handling Questions During the Walk-Through**
+
+**If they interrupt with a question:**
+
+1. **Stop and listen fully** (don't start talking over them)
+2. **Answer directly and honestly**
+   - If you know: Give a short answer (don't go on a tangent)
+   - If you don't know: "That's a good question. Honestly, I haven't gone that deep into that part. But here's my reasoning for why I chose this approach..."
+3. **Bridge back to your narrative**
+   - "Does that make sense? So that's why I..."
+   - "Great question. That actually brings us to the next point..."
+
+**Example:**
+> **Them:** "Why did you choose Cassandra instead of SQL?"
+> 
+> **You:** "Good question. Cassandra is better for write-heavy workloads and scales horizontally. Since orders are constantly being created and updated, it made sense. Plus, we don't have complex joins—each order is mostly independent data."
+> 
+> **Bridge back:** "Which is why I structured the table like this [point to code]... and tested the query performance..."
+
+---
+
+### **If They Ask You to Go Deeper on a Section**
+
+**They might say:** "Can you explain the Feign client part more?"
+
+**What to do:**
+1. Expand on that ONE topic (2-3 minutes)
+2. Show the code
+3. Explain why you chose it
+4. Bring it back to the main narrative
+
+**Don't:** Panic or ramble. They're genuinely interested—it's a good sign.
+
+---
+
+### **If You Make a Mistake (You Click Wrong File, Brain Fart, etc.)**
+
+**Just say:**
+> "Oops, wrong file. Let me find the right one."
+
+**Then calmly navigate to the right place.**
+
+**Don't:**
+❌ Apologize excessively  
+❌ Pretend it didn't happen  
+❌ Get flustered  
+
+It shows you're human and confident. They'll respect it.
+
+---
+
+## 🏁 HOW TO CLOSE THE INTERVIEW
+
+### **Watch for the 5-Minute Mark**
+
+**If you don't know time is running out, say this around 18min:**
+
+> "We've got a few minutes left. Is there anything else you'd like me to dive deeper into, or any final questions?"
+
+This shows:
+✅ Time awareness  
+✅ Respect for their schedule  
+✅ Confidence (not desperate to fill silence)
+
+---
+
+### **The Closing Statement (Choose ONE and Memorize)**
+
+**If the vibe is formal:**
+> "I'm proud of this work. AI was incredibly helpful for scaffolding and design brainstorming, but I owned the hard decisions: where to validate tokens, how to structure the database, handling failures gracefully. I tested everything thoroughly because I'm responsible for quality. That's how I use AI responsibly."
+
+**If the vibe is conversational:**
+> "The big thing I learned: AI is amazing for boilerplate and exploring options. But jumping from 'AI says do this' to shipping it? That's where I add value. Deep testing, understanding the trade-offs, catching design blindspots. That's the skill."
+
+**If they asked a lot of questions and wanted depth:**
+> "What I really appreciate about this project is it forced me to understand Spring Security deeply, Cassandra partitioning, Kafka semantics—not just copy-paste AI code. I think that's the real value of using AI thoughtfully: you move faster on things you understand, so you have time to master the hard things."
+
+**If the interview felt collaborative/positive:**
+> "Thanks for engaging so thoughtfully with the questions. This actually made me think about things I hadn't articulated before. I'm genuinely excited by how the team approaches AI—as a tool to amplify good judgment, not replace it."
+
+---
+
+### **The Exit (30 seconds)**
+
+**Say:**
+> "Before we wrap: all the code is in GitHub [optional: provide link]. I'm happy to answer any follow-ups—feel free to reach out anytime."
+
+**Then:**
+- ✅ Stop screen share gracefully ("I'll stop sharing now")
+- ✅ Make eye contact with camera
+- ✅ Smile briefly
+- ✅ "Thanks again for your time. Really appreciated it."
+
+**Don't:**
+❌ Linger awkwardly after closing statement  
+❌ Start a new topic in the final 10 seconds  
+❌ Ask overeager "Did I do well?" questions  
+
+---
+
+### **After the Interview (If They Say "We'll Be in Touch")**
+
+**Confident closing:**
+> "Great. Thanks again. Looking forward to hearing from you."
+
+**Then politely end the call.**
+
+---
+
+## 📝 Complete Flow (Word-for-Word)
+
+### **START:**
+> "Hi! Thanks for taking the time. I want to walk through what I built—starting with a non-technical overview, then drilling into the code and showing how I used AI. Sound good?"
+
+### **DURING (Transition Examples):**
+> "So that's the big picture. Let me show you the user interface..."
+> "Okay, architecture makes sense. Now let me show the code."
+> "Here's the Controller. Next is the Service where the business logic lives."
+> "This is where I made changes to AI's initial scaffold..."
+> "That's a great question. Let me explain my reasoning..."
+
+### **CLOSE:**
+> "I'm proud of this work. AI helped with scaffolding and exploration, but the hard calls—validation, error handling, performance trade-offs—those are mine. I tested thoroughly. That's ownership."
+> 
+> "Any final questions? Otherwise, thanks so much for your time!"
+
+---
+
+## ⚡ Quick Rules Summary
+
+| Moment | Do This | Don't Do This |
+|--------|---------|---------------|
+| **Start** | Confirm screen share + set agenda | Jump straight into code |
+| **During** | Speak slowly, point at code, pause after key points | Ramble, apologize, go too deep |
+| **Questions** | Answer, then bridge back to flow | Get defensive, ignore them |
+| **Mistakes** | Casually fix without drama | Apologize excessively |
+| **Close** | Ownership statement + thank them | Overstay, ask "did I do well?" |
+
+---
+
 ## PART 1: The Opening (2 minutes — Non-Technical)
 
 ### Your goal: 
