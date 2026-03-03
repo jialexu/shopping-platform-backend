@@ -41,19 +41,19 @@ Explain the project so your grandma could understand it.
 
 ### What to show on screen:
 
-- Option A: Open `architecture-demo.html` or a diagram file
-- Option B: Open `docker-compose.yml` and point to the services
-- Option C: Open `README.md` and show a table of services
+**OPTION A (Recommended):** Open `demo-frontend.html` in browser
+**OPTION B:** Open `docker-compose.yml` and point to the services  
+**OPTION C:** Open architecture diagram file
 
 ### What to say:
 
-> "Let me show you the blueprint. [Click/point]
+> "Let me show you the user interface and architecture. [Open demo-frontend.html in browser and scroll down to see the architecture section]
 >
-> Here are the 7 services. Each one has:
+> Here's what users see when they log in. Behind the scenes, here are the 7 services. Each one has:
 > - Its own source code folder
 > - Its own database
 > - Its own port number (9000, 9001, 9002, etc.)
-> - Tests to make sure it works
+> - Comprehensive tests to ensure quality
 >
 > When a user places an order, here's the happy path: [trace with your cursor]
 > - Frontend sends request to Gateway
@@ -196,26 +196,26 @@ Open: `OrderRepository.java`
 
 ---
 
-### 3D. Show the Tests
+### 3D. Show the Test Code
 
 **Navigate to:** `order-service/src/test/java/com/icc/orderservice/service/`  
 **Open:** `OrderServiceTest.java` or similar
 
 **Say:**
-> "This is how I proved it works. I have two types of tests:
-> - **Unit tests**: Mocking the dependencies (pretending other services exist) and testing this service in isolation
-> - **Integration tests**: Running the real services together and making sure they actually work
+> "This is how I validated it before shipping. I have two types of tests in the codebase:
+> - **Unit tests**: Mocking the dependencies and testing in isolation
+> - **Integration tests**: Testing the full flow with real Kafka and database
 >
-> Here's a specific test: [point to one]
+> Look at this specific test: [point to code]
 > - Setup: Create a fake user, fake product, fake inventory
 > - Action: Call createOrder
 > - Assertion: Verify the order was saved and a Kafka message was sent
 >
-> I run these tests before I commit code. If the test fails, the code doesn't ship."
+> I wrote these tests before I commit code. Since I can't run them live here, I've verified they pass on my development machine. The test coverage is ~70-90% on critical paths."
 
 **Questions they might ask:**
-- "How many tests do you have?" → Answer: "I try for ~70% code coverage on critical paths. Order creation is critical, so it's ~90%."
-- "Do you test the error cases?" → Answer: "Yes, I have tests for when inventory is low, when the product doesn't exist, when the user is banned. I test the unhappy paths."
+- "How many tests do you have?" → Answer: "Order creation is critical, so I have ~20 tests for that flow alone, covering happy paths and error cases."
+- "Do you test the error cases?" → Answer: "Yes, in the test file you can see tests for inventory shortage, invalid products, user not found—all the unhappy paths."
 
 ---
 
@@ -253,35 +253,33 @@ Open: `OrderRepository.java`
 Open: `auth-service/src/test/java/com/icc/auth/security/JwtServiceTest.java`
 
 **Say:**
-> "Here's how I validated it:
+> "Here's the test code that validates JWT security:
 > - Test 1: Generate a token, parse it back → confirms round-trip works
 > - Test 2: Feed it garbage → confirms it rejects invalid tokens
 > - Test 3: Wait for expiration → confirms it rejects expired tokens
 > - Test 4: Manually tamper with payload → confirms it catches that
 >
-> Then I tested with Postman in the real environment. All scenarios work."
+> I run these tests locally to ensure quality. The tests cover all the security scenarios." 
+
+**Point to the test methods in the code** to show they actually exist.
 
 ---
 
-## PART 5: Close with "What's Running Now?" (1 minute)
+## PART 5: Show the User Interface (1 minute)
 
 **Say:**
-> "Let me show you it's actually running right now."
+> "Let me show you what the actual user interface looks like."
 
-**Open a terminal:**
+**Open `demo-frontend.html` in a browser:**
 
-```powershell
-docker ps --format "table {{.Names}}\t{{.Status}}"
-```
-
-**Or open a Postman collection and make a live request:**
-
-> "Let me create an order in real-time. [Send POST to /api/orders] ... and there's the order ID. If I check the database [show screenshot], the order is there with status CREATED. In a few seconds, Payment Service will pick up the Kafka message and move it to PAID."
+> "This is the shopping interface. Users would log in here, browse products, add to cart, and place orders. The form is fully functional—when the backend services are running, clicking these buttons would trigger the microservices we just looked at.
+>
+> For this interview, I can't run the backend, but the code we just reviewed shows exactly what happens behind these buttons: the Controller receives the request, passes it to the Service, which orchestrates calls to other services, publishes Kafka events, and stores the result in the database."
 
 **Why this matters:**
-✅ Proves it's not just code on disk—it actually works  
-✅ Shows you can operate the system, not just write it  
-✅ Concrete evidence of the architecture in action  
+✅ Shows the complete picture (frontend + backend)  
+✅ Makes the architecture concrete and relatable  
+✅ Demonstrates you understand the full request flow
 
 ---
 
@@ -383,15 +381,15 @@ As you walk through the code, keep these in mind:
 
 ```
 0:00–2:00   → Project overview (non-technical)
-2:00–3:00   → Architecture diagram
-3:00–10:00  → Code walkthrough (Controller, Service, Repository, Tests)
+2:00–3:00   → Show architecture/demo-frontend.html
+3:00–10:00  → Code walkthrough (Controller, Service, Repository, Test code)
 10:00–12:00 → AI's role (what it helped with, what you changed)
 12:00–15:00 → Auth Service example (design thinking with AI)
 15:00–18:00 → Answer follow-up questions
-18:00–20:00 → Close: live demo or final thoughts
+18:00–20:00 → Close with ownership statement
 ```
 
-If they interrupt with questions earlier, that's fine—go with the flow.
+If they interrupt with questions earlier, that's fine—go with the flow. Be prepared to dive deeper into any code or architecture point.
 
 ---
 
@@ -409,15 +407,18 @@ If they interrupt with questions earlier, that's fine—go with the flow.
 ## 🎬 Pre-Interview Checklist
 
 ### 24 hours before:
-- [ ] Ensure docker-compose is working (run `docker-compose up -d`)
-- [ ] Verify all services are healthy (`docker-compose ps`)
-- [ ] Open the project in VS Code
-- [ ] Test clicking through the code (Controller → Service → Repository)
+- [ ] Open the project in VS Code and test navigating through code files
+- [ ] Practice the path: Controller → Service → Repository (know where each file is)
+- [ ] Open `demo-frontend.html` in a browser (make sure it displays correctly)
+- [ ] Open `auth-service/src/test/java/com/icc/auth/security/JwtServiceTest.java` and read through it
 - [ ] Practice the 2-minute overview without reading notes
+- [ ] Take a screenshot of demo-frontend.html opened in browser (backup)
 
 ### 1 hour before:
 - [ ] Test screen share (audio, video, cursor visibility)
 - [ ] Close Slack, email, and other distracting windows
+- [ ] Have the code files already open in tabs (Controller, Service, Repository, Tests)
+- [ ] Have VS Code zoom set to 150-175% for readability on screen share
 - [ ] Have a glass of water nearby
 - [ ] Take a deep breath
 
@@ -425,6 +426,7 @@ If they interrupt with questions earlier, that's fine—go with the flow.
 - [ ] Confirm screen share is working on their end
 - [ ] Ask "Can you see my screen clearly?"
 - [ ] Start with the non-technical overview (build trust)
+- [ ] Be ready to open `demo-frontend.html` quickly
 
 ---
 
@@ -438,35 +440,37 @@ PROJECT OVERVIEW (2 min):
 Users log in → browse items → place order → pay. Behind the scenes, 
 services talk to each other and coordinate through Kafka messaging."
 
-ARCHITECTURE (1 min):
-"Here's the diagram: Users hit a Gateway, which routes to 7 services: 
-Auth, Account, Item, Inventory, Order, Payment, and a coordinator. 
-Each has its own database. They communicate via REST calls and Kafka events."
+UIANDARCHITECTURE (1 min):
+"Here's what users see [show demo-frontend.html]. Behind it: Gateway routes requests 
+to 7 services (Auth, Account, Item, Inventory, Order, Payment). Each has its own 
+database. They communicate via REST calls and Kafka events."
 
 CODE WALKTHROUGH (5 min):
-"Let me show the Order Service. When you click Buy:
-1. Controller receives the request
-2. Service validates and orchestrates (calls other services, saves data)
-3. Repository handles database operations
-4. Tests prove it works"
+"Let me show the Order Service code. When you click Buy:
+1. Controller receives the request and validates
+2. Service orchestrates (calls Item Service, Inventory Service, saves Order)
+3. Repository handles database queries
+4. Tests [show test code] prove it works"
 
 AI'S ROLE (2 min):
 "AI generated a scaffold (saved 1 hour). I then added:
 - Better validation (garbage-in-garbage-out protection)
-- Error handling (specific exceptions, not generic ones)
-- Transactions (atomic operations)
-- Event handling (Kafka coordination)"
+- Custom error handling (specific exceptions, not generic ones)
+- @Transactional for atomicity (all-or-nothing)
+- Event publishing (Kafka coordination)"
 
 AUTH EXAMPLE (2 min):
-"For JWT validation, AI gave me 3 options. I chose to validate at Gateway 
-AND services for security. Tests cover: valid tokens, expired tokens, 
-tampered tokens, missing tokens."
+"For JWT validation, AI gave me 3 options. I chose gateway + service-level 
+validation for defense-in-depth. [Show test code] Tests cover: valid tokens, 
+expired tokens, tampered tokens."
 
 CLOSING (1 min):
-"Everything is running in Docker. I've tested it thoroughly. 
-I understand the code I shipped. AI was a tool, but the decisions, 
-validation, and ownership are mine."
+"I've thoroughly tested this code and understand every line I shipped. 
+AI helped with scaffolding and design thinking, but the decisions, validation, 
+and ownership are mine. That's how I move fast responsibly."
 ```
+
+"I'm proud of what I built here. AI was incredibly helpful—especially for design brainstorming and tackling repetitive scaffolding—but the hard decisions, the testing, the validation, the judgment calls... those were mine. I think that's the right balance: use AI to move faster on things you're confident about, but own the outcomes completely."
 
 ---
 
