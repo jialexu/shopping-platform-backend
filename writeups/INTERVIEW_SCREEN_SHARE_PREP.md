@@ -41,15 +41,15 @@ Explain the project so your grandma could understand it.
 
 ### What to show on screen:
 
-**OPTION A (Recommended):** Open `demo-frontend.html` in browser
-**OPTION B:** Open `docker-compose.yml` and point to the services  
-**OPTION C:** Open architecture diagram file
+- Option A: Open `architecture-demo.html` or a diagram file
+- Option B: Open `docker-compose.yml` and point to the services
+- Option C: Open `README.md` and show a table of services
 
 ### What to say:
 
-> "Let me show you the user interface and architecture. [Open demo-frontend.html in browser and scroll down to see the architecture section]
+> "Let me show you the blueprint. [Click/point]
 >
-> Here's what users see when they log in. Behind the scenes, here are the 7 services. Each one has:
+> Here are the 7 services. Each one has:
 > - Its own source code folder
 > - Its own database
 > - Its own port number (9000, 9001, 9002, etc.)
@@ -256,7 +256,6 @@ Open: `auth-service/src/test/java/com/icc/auth/security/JwtServiceTest.java`
 > "Here's the test code that validates JWT security:
 > - Test 1: Generate a token, parse it back → confirms round-trip works
 > - Test 2: Feed it garbage → confirms it rejects invalid tokens
-> - Test 3: Wait for expiration → confirms it rejects expired tokens
 > - Test 4: Manually tamper with payload → confirms it catches that
 >
 > I run these tests locally to ensure quality. The tests cover all the security scenarios." 
@@ -440,17 +439,17 @@ PROJECT OVERVIEW (2 min):
 Users log in → browse items → place order → pay. Behind the scenes, 
 services talk to each other and coordinate through Kafka messaging."
 
-UIANDARCHITECTURE (1 min):
-"Here's what users see [show demo-frontend.html]. Behind it: Gateway routes requests 
-to 7 services (Auth, Account, Item, Inventory, Order, Payment). Each has its own 
-database. They communicate via REST calls and Kafka events."
+ARCHITECTURE (1 min):
+"Here's the diagram: Users hit a Gateway, which routes to 7 services: 
+Auth, Account, Item, Inventory, Order, Payment, and a coordinator. 
+Each has its own database. They communicate via REST calls and Kafka events."
 
 CODE WALKTHROUGH (5 min):
-"Let me show the Order Service code. When you click Buy:
-1. Controller receives the request and validates
-2. Service orchestrates (calls Item Service, Inventory Service, saves Order)
-3. Repository handles database queries
-4. Tests [show test code] prove it works"
+"Let me show the Order Service. When you click Buy:
+1. Controller receives the request
+2. Service validates and orchestrates (calls other services, saves data)
+3. Repository handles database operations
+4. Tests prove it works"
 
 AI'S ROLE (2 min):
 "AI generated a scaffold (saved 1 hour). I then added:
